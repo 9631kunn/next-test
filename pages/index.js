@@ -7,7 +7,6 @@ import Layout from "../components/Layout";
 
 export default function Index({ allPosts }) {
   const heroPost = allPosts[0];
-  const morePosts = allPosts.slice(1);
   return (
     <Layout>
       <Head>
@@ -15,10 +14,8 @@ export default function Index({ allPosts }) {
       </Head>
       {heroPost && (
         <>
-          <Link href={heroPost.slug}>
-            <a>
-              <h1>{heroPost.title}</h1>
-            </a>
+          <Link as={`/posts/${heroPost.slug}`} href="/posts/[slug]">
+            <a>{heroPost.title}</a>
           </Link>
           <img src={heroPost.coverImage} alt="" />
           <date>{heroPost.date}</date>
