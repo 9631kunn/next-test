@@ -1,13 +1,45 @@
+import Link from "next/link";
 import Head from "next/head";
-import { getSortedPostsData } from "../lib/posts";
+import { getAllPosts } from "../lib/api";
+import { CMS_NAME } from "../lib/constants";
 
-export default function Home() {
+import Layout from "../components/Layout";
+
+export default function Index({ allPosts }) {
+  const heroPost = allPosts[0];
+  const morePosts = allPosts.slice(1);
   return (
-    <div className="container">
+    <Layout>
       <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
+        <title>{CMS_NAME}</title>
       </Head>
-    </div>
+      {heroPost && (
+        <>
+          <Link href={heroPost.slug}>
+            <a>
+              <h1>{heroPost.title}</h1>
+            </a>
+          </Link>
+          <img src={heroPost.coverImage} alt="" />
+          <date>{heroPost.date}</date>
+          <small>{heroPost.author.name}</small>
+          <p>{heroPost.excerpt}</p>
+        </>
+      )}
+    </Layout>
   );
+}
+
+export async function getStaticProps() {
+  const allPosts = getAllPosts([
+    "title",
+    "date",
+    "slug",
+    "author",
+    "coverImage",
+    "excerpt",
+  ]);
+  return {
+    props: { allPosts },
+  };
 }
