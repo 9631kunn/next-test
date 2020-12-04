@@ -1,5 +1,15 @@
 import firebase from "firebase/app"
 
+import { User } from "../models/User"
+import { atom, useRecoilState } from "recoil"
+
+// ref: https://recoiljs.org/docs/basic-tutorial/atoms/
+
+const userState = atom<User>({
+  key: "user",
+  default: null
+})
+
 function authenticate() {
   // 匿名認証
   firebase
@@ -21,7 +31,9 @@ function authenticate() {
   })
 }
 
-// NOT SSR BUT BROWSER
-if (process.browser) {
-  authenticate()
+
+function useAuthentication() {
+  // ref: https://recoiljs.org/docs/api-reference/core/useRecoilState/
+  const [user, setUser] = useRecoilState(userState)
+  return {user}
 }

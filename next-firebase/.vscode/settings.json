@@ -1,0 +1,13 @@
+{
+  "editor.formatOnSave": true,
+  "eslint.workingDirectories": [
+    { "directory": "./app", "changeProcessCWD": true }
+  ],
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "files.associations": {
+    "*.ts": "typescriptreact",
+    "*.tsx": "typescriptreact"
+  }
+}
