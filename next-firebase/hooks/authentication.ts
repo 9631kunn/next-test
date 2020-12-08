@@ -14,24 +14,22 @@ export function useAuthentication() {
   // ref: https://recoiljs.org/docs/api-reference/core/useRecoilState/
   const [user, setUser] = useRecoilState(userState)
 
-
   useEffect(() => {
     if (user !== null) {
       return
     }
-
-    console.log("START USEEFFECT")
 
     firebase.auth().signInAnonymously().catch((err) => {
       console.log(err)
     })
     firebase.auth().onAuthStateChanged(firebaseUser => {
       if (firebaseUser) {
-        console.log("SET USER")
-        setUser({
+        const loginUser: User = {
           uid: firebaseUser.uid,
           isAnonymous: firebaseUser.isAnonymous
-        })
+        }
+        setUser(loginUser)
+        createUserInfoNotFound(loginUser)
       } else {
         setUser(null)
       }
@@ -39,4 +37,16 @@ export function useAuthentication() {
   }, [])
 
   return {user}
+}
+
+async function createUserInfoNotFound(user: User) {
+  const userRef = firebase.firestore().collection("users").doc(user.uid)
+  const doc = await userRef.get()
+  if (doc.exists) {
+    return
+  }
+
+  await userRef.set({
+    name: "taro" + new Date().getTime()
+  })
 }
