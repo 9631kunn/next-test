@@ -30,8 +30,12 @@ export default function UserShow() {
 
   return (
     <Layout>
-      <div>{user ? user.name : 'ロード中…'}</div>
-      <button className="btn btn-primary">ボタン</button>
+      {user && (
+        <div className="text-center">
+          <h1 className="h4">{user.name}さんのページ</h1>
+          <p className="h5">{user.name}さんへの質問</p>
+        </div>
+      )}
     </Layout>
   )
 }
