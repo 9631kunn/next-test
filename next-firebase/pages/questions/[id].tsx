@@ -4,6 +4,7 @@ import firebase from "firebase/app"
 import { useAuthentication } from "../../hooks/authentication"
 import Layout from "../../components/Layout"
 import { Question } from "../../models/Question"
+import { Answer } from "../../models/Answer"
 
 type Query = {
   id: string
@@ -14,6 +15,7 @@ export default function QuestionShow() {
   const query = router.query as Query
   const { user } = useAuthentication()
   const [question, setQuestion] = useState<Question>(null)
+  const [answer, setAnswer] = useState<Answer>(null)
   const [message, setMessage] = useState("")
   const [isSending, setIsSending] = useState(null)
 
