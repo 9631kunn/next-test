@@ -9,30 +9,39 @@ export default function QuestionsReceived() {
   const [questions, setQuestions] = useState<Question[]>([])
   const { user } = useAuthentication()
 
+  // firestoreから質問取得
+  // ref: https://firebase.google.cn/docs/firestore/query-data/get-data?hl=ja
+  function createBaseQuery() {
+    return firebase
+      .firestore()
+      .collection("questions")
+      .where("receiverUid", "==", user.uid)
+      .orderBy("createdAt", desc)
+      .limit(10)
+  }
+
+  // questionsに取得した質問をsetQuestions
+  function appendQuestions(
+    snapshot: firebase.firestore.QuerySnapshot<firebase.firestore.DocumentData>
+  ) {
+    const gotQuestions = snapshot.docs.map(doc => {
+      const question = doc.data() as Question
+      question.id = doc.id
+      return question
+    })
+    setQuestions(questions.concat(gotQuestions))
+  }
+
+  // 質問取得〜状態管理
+  async function loadQuestions() {
+    const snapshot = await createBaseQuery().get()
+    if (snapshot.empty) return
+    appendQuestions(snapshot)
+  }
+
   useEffect(() => {
     if (!process.browser) return
     if (user === null) return
-
-    // firebaseのdata取得
-    // ref: https://firebase.google.cn/docs/firestore/query-data/get-data?hl=ja
-    async function loadQuestions() {
-      const snapshot = await firebase
-        .firestore()
-        .collection("questions")
-        .where("receiverUid", "==", user.uid)
-        .orderBy("createdAt", "desc")
-        .get()
-      if (snapshot.empty) return
-      console.log(snapshot)
-
-      const gotQuestions = snapshot.docs.map(doc => {
-        const question = doc.data() as Question
-        question.id = doc.id
-        return question
-      })
-
-      setQuestions(gotQuestions)
-    }
     loadQuestions()
   }, [process.browser, user])
 
