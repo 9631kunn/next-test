@@ -1,3 +1,5 @@
+import { ToastContainer } from 'react-toastify';
+
 export default function Layout({ children }) {
   return (
     <div>
@@ -18,7 +20,8 @@ export default function Layout({ children }) {
           </form>
         </div>
       </nav>
-      <div className="container">{ children }</div>
+      <div className="container">{children}</div>
+      <ToastContainer />
     </div>
   )
 }
