@@ -33,6 +33,21 @@ export default function QuestionShow() {
     const gotQuestion = questionDoc.data() as Question
     gotQuestion.id = questionDoc.id
     setQuestion(gotQuestion)
+
+    if (!gotQuestion.isReplied) return
+
+    const answerSnapshot = await firebase
+      .firestore()
+      .collection("answers")
+      .where("questionId", "==", gotQuestion.id)
+      .limit(1)
+      .get()
+
+    if (answerSnapshot.empty) return
+
+    const gotAnswer = answerSnapshot.docs[0].data() as Answer
+    gotAnswer.id = answerSnapshot.docs[0].id
+    setAnswer(gotAnswer)
   }
 
   // 質問表示
@@ -62,6 +77,14 @@ export default function QuestionShow() {
     })
 
     setIsSending(false)
+    const now = new Date().getTime()
+    setAnswer({
+      id: "",
+      uid: user.uid,
+      questionId: question.id,
+      message,
+      createdAt: new firebase.firestore.Timestamp(now / 1000, now % 1000)
+    })
   }
 
   return (
@@ -69,34 +92,44 @@ export default function QuestionShow() {
       <div className="row justify-content-center">
         <div className="col-12 col-md-6">
           {question && (
-            <div className="card">
-              <div className="card-body">{question.message}</div>
-            </div>
+            <>
+              <div className="card">
+                <div className="card-body">{question.message}</div>
+              </div>
+              <div className="text-center mt-4">
+                <h2 className="h4">回答</h2>
+                {answer === null ? (
+                  <form onSubmit={onSubmit}>
+                    <textarea
+                      name="answer"
+                      placeholder="回答する"
+                      rows={6}
+                      value={message}
+                      onChange={e => setMessage(e.target.value)}
+                      className="form-control"
+                      required
+                    />
+                    <div className="m-3">
+                      {isSending ? (
+                        <div className="spinner-border text-secondary" role="status" />
+                      ): (
+                        <button className="btn btn-primary">
+                          回答する
+                        </button>
+                      )}
+                    </div>
+                  </form>
+                ): (
+                    <div className="card">
+                      <div className="card-body text-left">
+                        { answer.message }
+                      </div>
+                  </div>
+                )}
+              </div>
+            </>
           )}
         </div>
-      </div>
-      <div className="text-center mt-4">
-        <h2 className="h4">回答する</h2>
-        <form onSubmit={onSubmit}>
-          <textarea
-            name="answer"
-            placeholder="回答する"
-            rows={6}
-            value={message}
-            onChange={e => setMessage(e.target.value)}
-            className="form-control"
-            required
-          />
-          <div className="m-3">
-            {isSending ? (
-              <div className="spinner-border text-secondary" role="status" />
-            ): (
-              <button className="btn btn-primary">
-                回答する
-              </button>
-            )}
-          </div>
-        </form>
       </div>
     </Layout>
   )
