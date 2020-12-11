@@ -27,5 +27,29 @@ export default function UserShow() {
     loadUser()
   }, [query.uid])
 
-  return <div>{ user ? user.name : "ロード中" }</div>
+  return (
+    <div>
+      <nav
+        className="navbar navbar-expand-lg navbar-light mb-3"
+        style={{ backgroundColor: '#e3f2fd' }}
+      >
+        <div className="container">
+          <div className="mr-auto">
+            <a className="navbar-brand" href="#">
+              Navbar
+            </a>
+          </div>
+          <form className="d-flex">
+            <button className="btn btn-outline-primary" type="submit">
+              Search
+            </button>
+          </form>
+        </div>
+      </nav>
+      <div className="container">
+        <div>{user ? user.name : 'ロード中…'}</div>
+        <button className="btn btn-primary">ボタン</button>
+      </div>
+    </div>
+  )
 }
